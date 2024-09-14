@@ -10,9 +10,17 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  modules: ["@nuxt/fonts", "@nuxt/ui", "@pinia/nuxt", "nuxt-svgo"],
+  modules: [
+    "@nuxt/fonts",
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "nuxt-svgo",
+    "@nuxt/test-utils/module",
+  ],
 
   runtimeConfig: {
     public: {},
   },
+
+  ssr: false,
 });
