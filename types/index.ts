@@ -1,8 +1,9 @@
 export interface Horse {
   name: string;
   id: number;
-  color: string[];
+  jockeySilk: string[];
   condition: number;
+  color: string;
 }
 
 export interface RaceRun {
