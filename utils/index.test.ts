@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   generateUniqueHorseName,
   generateUniqueCondition,
-  generateUniqueColors,
+  generateUniqueSilks,
   createInitialHorses,
   generateRaceSchedule,
 } from "./index";
@@ -59,18 +59,18 @@ describe("generateUniqueCondition", () => {
   });
 });
 
-describe("generateUniqueColors", () => {
+describe("generateUniqueSilks", () => {
   it("should generate a unique color pair", () => {
     const createdColors: string[][] = [];
-    const colors = generateUniqueColors(JOCKEY_SILKS, createdColors);
+    const colors = generateUniqueSilks(JOCKEY_SILKS, createdColors);
     expect(JOCKEY_SILKS).toContainEqual(colors);
     expect(createdColors).toContainEqual(colors);
   });
 
   it("should not generate duplicate color pairs", () => {
     const createdColors: string[][] = [];
-    const colors1 = generateUniqueColors(JOCKEY_SILKS, createdColors);
-    const colors2 = generateUniqueColors(JOCKEY_SILKS, createdColors);
+    const colors1 = generateUniqueSilks(JOCKEY_SILKS, createdColors);
+    const colors2 = generateUniqueSilks(JOCKEY_SILKS, createdColors);
     expect(colors1).not.toEqual(colors2);
   });
 });
@@ -88,7 +88,7 @@ describe("createInitialHorses", () => {
     const names = horses.map((horse) => horse.name);
     const ids = horses.map((horse) => horse.id);
     const conditions = horses.map((horse) => horse.condition);
-    const colors = horses.map((horse) => horse.color);
+    const colors = horses.map((horse) => horse.jockeySilk);
 
     expect(new Set(names).size).toBe(count);
     expect(new Set(ids).size).toBe(count);
@@ -103,7 +103,7 @@ describe("createInitialHorses", () => {
     const names = horses.map((horse) => horse.name);
     const ids = horses.map((horse) => horse.id);
     const conditions = horses.map((horse) => horse.condition);
-    const colors = horses.map((horse) => horse.color);
+    const colors = horses.map((horse) => horse.jockeySilk);
 
     expect(horses.length).toBe(count);
     expect(new Set(names).size).toBe(count);
