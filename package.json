@@ -13,6 +13,7 @@
   "dependencies": {
     "@nuxt/fonts": "^0.8.0",
     "@nuxt/ui": "^2.18.4",
+    "lottie-web": "^5.12.2",
     "nuxt": "^3.13.0",
     "nuxt-svgo": "^4.0.5",
     "vue": "latest",
