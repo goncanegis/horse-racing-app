@@ -14,9 +14,6 @@ importers:
       '@nuxt/ui':
         specifier: ^2.18.4
         version: 2.18.4(magicast@0.3.5)(rollup@4.21.3)(vite@5.4.5(@types/node@22.5.5)(terser@5.32.0))(vue@3.5.5)
-      '@pinia/nuxt':
-        specifier: ^0.5.4
-        version: 0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5)
       nuxt:
         specifier: ^3.13.0
         version: 3.13.1(@parcel/watcher@2.4.1)(@types/node@22.5.5)(ioredis@5.4.1)(magicast@0.3.5)(rollup@4.21.3)(terser@5.32.0)(vite@5.4.5(@types/node@22.5.5)(terser@5.32.0))
@@ -32,13 +29,16 @@ importers:
       vue-toastification:
         specifier: 2.0.0-rc.5
         version: 2.0.0-rc.5(vue@3.5.5)
+      vuex:
+        specifier: ^4.0.2
+        version: 4.0.2(vue@3.5.5)
     devDependencies:
       '@nuxt/test-utils':
         specifier: ^3.14.2
         version: 3.14.2(@vue/test-utils@2.4.6)(h3@1.12.0)(happy-dom@15.7.4)(magicast@0.3.5)(nitropack@2.9.7(magicast@0.3.5))(playwright-core@1.47.1)(rollup@4.21.3)(vite@5.4.5(@types/node@22.5.5)(terser@5.32.0))(vitest@2.1.1(@types/node@22.5.5)(happy-dom@15.7.4)(terser@5.32.0))(vue-router@4.4.5(vue@3.5.5))(vue@3.5.5)
-      '@pinia-plugin-persistedstate/nuxt':
-        specifier: ^1.2.1
-        version: 1.2.1(@pinia/nuxt@0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5))(magicast@0.3.5)(pinia@2.2.2(vue@3.5.5))(rollup@4.21.3)
+      '@nuxt/types':
+        specifier: ^2.18.1
+        version: 2.18.1
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -834,6 +834,10 @@ packages:
       vitest:
         optional: true
 
+  '@nuxt/types@2.18.1':
+    resolution: {integrity: sha512-PpReoV9oHCnSpB9WqemTUWmlH1kqFHC3Xe5LH904VvCl/3xLO2nGYcrHeZCMV5hXNWsDUyqDnd/2cQHmeqj5lA==}
+    engines: {node: ^14.18.0 || >=16.10.0}
+
   '@nuxt/ui@2.18.4':
     resolution: {integrity: sha512-NzFUzh5Izd7mduhYhFBlIOcqE8aY+9mbSQ0n8sIASpASv162VJ46OsR5Jm5sbfhKDrgv7UsBk6VKXJXiEI7ThQ==}
     engines: {node: '>=v16.20.2'}
@@ -934,14 +938,6 @@ packages:
   '@parcel/watcher@2.4.1':
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
-
-  '@pinia-plugin-persistedstate/nuxt@1.2.1':
-    resolution: {integrity: sha512-q8s+4aQW/AjBMyeqLL48/qzBR5lcgnvvf1525ovNuKf6Wl9CsoLjPKh/5X8vNoKGwSow4gP7lVmdYPQRypgjgg==}
-    peerDependencies:
-      '@pinia/nuxt': ^0.5.0
-
-  '@pinia/nuxt@0.5.4':
-    resolution: {integrity: sha512-nNEs2pq6+Ji5qIyRwmeD9LUdctL8aJ8QMVLTYxUc16cXEOcIIN+MSA8Xudsd0lVETYgEAROT5HiBHnOYRDY3yQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1148,20 +1144,110 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
+  '@types/babel__core@7.20.5':
+    resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
+
+  '@types/babel__generator@7.6.8':
+    resolution: {integrity: sha512-ASsj+tpEDsEiFr1arWrlN6V3mdfjRMZt6LtK/Vp/kreFLnr5QH5+DhvD5nINYZXzwJvXeGq+05iUXcAzVrqWtw==}
+
+  '@types/babel__template@7.4.4':
+    resolution: {integrity: sha512-h/NUaSyG5EyxBIp8YRxo4RMe2/qQgvyowRwVMzhYhBCONbW8PUsg4lkFMrhgZhUe5z3L3MiLDuvyJ/CaPa2A8A==}
+
+  '@types/babel__traverse@7.20.6':
+    resolution: {integrity: sha512-r1bzfrm0tomOI8g1SzvCaQHo6Lcv6zu0EA+W2kHrt8dyrHQxGzBBL4kdkzIS+jBMV+EYcMAEAqXqYaLJq5rOZg==}
+
+  '@types/body-parser@1.19.5':
+    resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
+
+  '@types/compression@1.7.5':
+    resolution: {integrity: sha512-AAQvK5pxMpaT+nDvhHrsBhLSYG5yQdtkaJE1WYieSNY2mVFKAgmU4ks65rkZD5oqnGCFLyQpUr1CqI4DmUMyDg==}
+
+  '@types/connect@3.4.38':
+    resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
+
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
+
+  '@types/etag@1.8.3':
+    resolution: {integrity: sha512-QYHv9Yeh1ZYSMPQOoxY4XC4F1r+xRUiAriB303F4G6uBsT3KKX60DjiogvVv+2VISVDuJhcIzMdbjT+Bm938QQ==}
+
+  '@types/express-serve-static-core@4.19.5':
+    resolution: {integrity: sha512-y6W03tvrACO72aijJ5uF02FRq5cgDR9lUxddQ8vyF+GvmjJQqbzDcJngEjURc+ZsG31VI3hODNZJ2URj86pzmg==}
+
+  '@types/express@4.17.21':
+    resolution: {integrity: sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==}
+
+  '@types/file-loader@5.0.4':
+    resolution: {integrity: sha512-aB4X92oi5D2nIGI8/kolnJ47btRM2MQjQS4eJgA/VnCD12x0+kP5v7b5beVQWKHLOcquwUXvv6aMt8PmMy9uug==}
+
+  '@types/html-minifier-terser@7.0.2':
+    resolution: {integrity: sha512-mm2HqV22l8lFQh4r2oSsOEVea+m0qqxEmwpc9kC1p/XzmjLWrReR9D/GRs8Pex2NX/imyEH9c5IU/7tMBQCHOA==}
+
+  '@types/http-errors@2.0.4':
+    resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
 
   '@types/http-proxy@1.17.15':
     resolution: {integrity: sha512-25g5atgiVNTIv0LBDTg1H74Hvayx0ajtJPLLcYE3whFv75J0pWNtOBzaXJQgDTmrX1bx5U9YC2w/n65BN1HwRQ==}
 
+  '@types/less@3.0.6':
+    resolution: {integrity: sha512-PecSzorDGdabF57OBeQO/xFbAkYWo88g4Xvnsx7LRwqLC17I7OoKtA3bQB9uXkY6UkMWCOsA8HSVpaoitscdXw==}
+
+  '@types/mime@1.3.5':
+    resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
+
+  '@types/node@16.18.108':
+    resolution: {integrity: sha512-fj42LD82fSv6yN9C6Q4dzS+hujHj+pTv0IpRR3kI20fnYeS0ytBpjFO9OjmDowSPPt4lNKN46JLaKbCyP+BW2A==}
+
   '@types/node@22.5.5':
     resolution: {integrity: sha512-Xjs4y5UPO/CLdzpgR6GirZJx36yScjh73+2NlLlkFRSoQN8B0DpfXPdZGnvVmLRLOsqDpOfTNv7D9trgGhmOIA==}
+
+  '@types/optimize-css-assets-webpack-plugin@5.0.8':
+    resolution: {integrity: sha512-n134DdmRVXTy0KKbgg3A/G02r2XJKJicYzbJYhdIO8rdYdzoMv6GNHjog2Oq1ttaCOhsYcPIA6Sn7eFxEGCM1A==}
+
+  '@types/pug@2.0.10':
+    resolution: {integrity: sha512-Sk/uYFOBAB7mb74XcpizmH0KOR2Pv3D2Hmrh1Dmy5BmK3MpdSa5kqZcg6EKBdklU0bFXX9gCfzvpnyUehrPIuA==}
+
+  '@types/qs@6.9.16':
+    resolution: {integrity: sha512-7i+zxXdPD0T4cKDuxCUXJ4wHcsJLwENa6Z3dCu8cfCK743OGy5Nu1RmAGqDPsoTDINVEcdXKRvR/zre+P2Ku1A==}
+
+  '@types/range-parser@1.2.7':
+    resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
+  '@types/send@0.17.4':
+    resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
+
+  '@types/serve-static@1.15.7':
+    resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
+
+  '@types/source-list-map@0.1.6':
+    resolution: {integrity: sha512-5JcVt1u5HDmlXkwOD2nslZVllBBc7HDuOICfiZah2Z0is8M8g+ddAEawbmd3VjedfDHBzxCaXLs07QEmb7y54g==}
+
+  '@types/tapable@1.0.12':
+    resolution: {integrity: sha512-bTHG8fcxEqv1M9+TD14P8ok8hjxoOCkfKc8XXLaaD05kI7ohpeI956jtDOD3XHKBQrlyPughUtzm1jtVhHpA5Q==}
+
+  '@types/terser-webpack-plugin@4.2.1':
+    resolution: {integrity: sha512-x688KsgQKJF8PPfv4qSvHQztdZNHLlWJdolN9/ptAGimHVy3rY+vHdfglQDFh1Z39h7eMWOd6fQ7ke3PKQcdyA==}
+
+  '@types/uglify-js@3.17.5':
+    resolution: {integrity: sha512-TU+fZFBTBcXj/GpDpDaBmgWk/gn96kMZ+uocaFUlV2f8a6WdMzzI44QBCmGcCiYR0Y6ZlNRiyUyKKt5nl/lbzQ==}
+
   '@types/web-bluetooth@0.0.20':
     resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
+
+  '@types/webpack-bundle-analyzer@3.9.5':
+    resolution: {integrity: sha512-QlyDyX7rsOIJHASzXWlih8DT9fR+XCG9cwIV/4pKrtScdHv4XFshdEf/7iiqLqG0lzWcoBdzG8ylMHQ5XLNixw==}
+
+  '@types/webpack-hot-middleware@2.25.5':
+    resolution: {integrity: sha512-/eRWWMgZteNzl17qLCRdRmtKPZuWy984b11Igz9+BAU5a99Hc2AJinnMohMPVahGRSHby4XwsnjlgIt9m0Ce3g==}
+
+  '@types/webpack-sources@3.2.3':
+    resolution: {integrity: sha512-4nZOdMwSPHZ4pTEZzSp0AsTM4K7Qmu40UKW4tJDiOVs20UzYF9l+qUe4s0ftfN0pin06n+5cWWDJXH+sbhAiDw==}
+
+  '@types/webpack@4.41.39':
+    resolution: {integrity: sha512-otxUJvoi6FbBq/64gGH34eblpKLgdi+gf08GaAh8Bx6So0ZZic028Ev/SUxD22gbthMKCkeeiXEat1kHLDJfYg==}
 
   '@unhead/dom@1.11.2':
     resolution: {integrity: sha512-e5Ilqa1ktwGJGhFt3jEI78LywNuvqOR4GdEa+sV2OuKbldWBoS8DosCf7jzwEIPYgn2ubDQ0ygn9JH+m/x88gA==}
@@ -1844,9 +1930,6 @@ packages:
 
   deep-equal@1.0.1:
     resolution: {integrity: sha512-bHtC0iYvWhyaTzvV3CZgPeZQqCOBGyGsVV7v4eevpdkLHfiSrXUdBG+qAuSz4RI70sszvjQ1QSZ98An1yNwpSw==}
-
-  deep-pick-omit@1.2.0:
-    resolution: {integrity: sha512-2CGvfTM2c+IP/MhdRZMpaHhTc6zIlgz3tQXJ/VGAkc7mjMrjqSU28qiI63yEcy+fcYfd/K+NNJcGRzap4M4bqw==}
 
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
@@ -2928,29 +3011,6 @@ packages:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
 
-  pinia-plugin-persistedstate@4.0.1:
-    resolution: {integrity: sha512-Gs2nhKUi6Rwhhc8PH9wvEAxfz4iZeJ/36qQv2ieYs94+zMozbGtMLIR4p9Aoim3c/PKf8J9orOz9n+f0ZF9CdA==}
-    peerDependencies:
-      '@pinia/nuxt': '>=0.5.0'
-      pinia: '>=2.0.0'
-    peerDependenciesMeta:
-      '@pinia/nuxt':
-        optional: true
-      pinia:
-        optional: true
-
-  pinia@2.2.2:
-    resolution: {integrity: sha512-ja2XqFWZC36mupU4z1ZzxeTApV7DOw44cV4dhQ9sGwun+N89v/XP7+j7q6TanS1u1tdbK4r+1BUx7heMaIdagA==}
-    peerDependencies:
-      '@vue/composition-api': ^1.4.0
-      typescript: '>=4.4.4'
-      vue: ^2.6.14 || ^3.3.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-      typescript:
-        optional: true
-
   pirates@4.0.6:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
     engines: {node: '>= 6'}
@@ -3536,6 +3596,11 @@ packages:
     resolution: {integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==}
     engines: {node: '>=10'}
 
+  terser@4.8.1:
+    resolution: {integrity: sha512-4GnLC0x667eJG0ewJTa6z/yXrbLGv80D9Ru6HIpCQmO+Q4PfEtBFi0ObSckqwL6VyQv/7ENJieXHo2ANmdQwgw==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
   terser@5.32.0:
     resolution: {integrity: sha512-v3Gtw3IzpBJ0ugkxEX8U0W6+TnPKRRCWGh1jC/iM/e3Ki5+qvO1L1EAZ56bZasc64aXHwRHNIQEzm6//i5cemQ==}
     engines: {node: '>=10'}
@@ -3939,6 +4004,11 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  vuex@4.0.2:
+    resolution: {integrity: sha512-M6r8uxELjZIK8kTKDGgZTYX/ahzblnzC4isU1tpmEuOIIKmV+TRdc+H4s8ds2NuZ7wpUTdGRzJRtoj+lI+pc0Q==}
+    peerDependencies:
+      vue: ^3.0.2
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -4866,6 +4936,24 @@ snapshots:
       - supports-color
       - webpack-sources
 
+  '@nuxt/types@2.18.1':
+    dependencies:
+      '@types/babel__core': 7.20.5
+      '@types/compression': 1.7.5
+      '@types/connect': 3.4.38
+      '@types/etag': 1.8.3
+      '@types/file-loader': 5.0.4
+      '@types/html-minifier-terser': 7.0.2
+      '@types/less': 3.0.6
+      '@types/node': 16.18.108
+      '@types/optimize-css-assets-webpack-plugin': 5.0.8
+      '@types/pug': 2.0.10
+      '@types/serve-static': 1.15.7
+      '@types/terser-webpack-plugin': 4.2.1
+      '@types/webpack': 4.41.39
+      '@types/webpack-bundle-analyzer': 3.9.5
+      '@types/webpack-hot-middleware': 2.25.5
+
   '@nuxt/ui@2.18.4(magicast@0.3.5)(rollup@4.21.3)(vite@5.4.5(@types/node@22.5.5)(terser@5.32.0))(vue@3.5.5)':
     dependencies:
       '@headlessui/tailwindcss': 0.2.1(tailwindcss@3.4.11)
@@ -5069,32 +5157,6 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@pinia-plugin-persistedstate/nuxt@1.2.1(@pinia/nuxt@0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5))(magicast@0.3.5)(pinia@2.2.2(vue@3.5.5))(rollup@4.21.3)':
-    dependencies:
-      '@nuxt/kit': 3.13.1(magicast@0.3.5)(rollup@4.21.3)
-      '@pinia/nuxt': 0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5)
-      defu: 6.1.4
-      pinia-plugin-persistedstate: 4.0.1(@pinia/nuxt@0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5))(magicast@0.3.5)(pinia@2.2.2(vue@3.5.5))(rollup@4.21.3)
-    transitivePeerDependencies:
-      - magicast
-      - pinia
-      - rollup
-      - supports-color
-      - webpack-sources
-
-  '@pinia/nuxt@0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5)':
-    dependencies:
-      '@nuxt/kit': 3.13.1(magicast@0.3.5)(rollup@4.21.3)
-      pinia: 2.2.2(vue@3.5.5)
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - magicast
-      - rollup
-      - supports-color
-      - typescript
-      - vue
-      - webpack-sources
-
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -5256,19 +5318,143 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
+  '@types/babel__core@7.20.5':
+    dependencies:
+      '@babel/parser': 7.25.6
+      '@babel/types': 7.25.6
+      '@types/babel__generator': 7.6.8
+      '@types/babel__template': 7.4.4
+      '@types/babel__traverse': 7.20.6
+
+  '@types/babel__generator@7.6.8':
+    dependencies:
+      '@babel/types': 7.25.6
+
+  '@types/babel__template@7.4.4':
+    dependencies:
+      '@babel/parser': 7.25.6
+      '@babel/types': 7.25.6
+
+  '@types/babel__traverse@7.20.6':
+    dependencies:
+      '@babel/types': 7.25.6
+
+  '@types/body-parser@1.19.5':
+    dependencies:
+      '@types/connect': 3.4.38
+      '@types/node': 22.5.5
+
+  '@types/compression@1.7.5':
+    dependencies:
+      '@types/express': 4.17.21
+
+  '@types/connect@3.4.38':
+    dependencies:
+      '@types/node': 22.5.5
+
   '@types/estree@1.0.5': {}
+
+  '@types/etag@1.8.3':
+    dependencies:
+      '@types/node': 22.5.5
+
+  '@types/express-serve-static-core@4.19.5':
+    dependencies:
+      '@types/node': 22.5.5
+      '@types/qs': 6.9.16
+      '@types/range-parser': 1.2.7
+      '@types/send': 0.17.4
+
+  '@types/express@4.17.21':
+    dependencies:
+      '@types/body-parser': 1.19.5
+      '@types/express-serve-static-core': 4.19.5
+      '@types/qs': 6.9.16
+      '@types/serve-static': 1.15.7
+
+  '@types/file-loader@5.0.4':
+    dependencies:
+      '@types/webpack': 4.41.39
+
+  '@types/html-minifier-terser@7.0.2': {}
+
+  '@types/http-errors@2.0.4': {}
 
   '@types/http-proxy@1.17.15':
     dependencies:
       '@types/node': 22.5.5
 
+  '@types/less@3.0.6': {}
+
+  '@types/mime@1.3.5': {}
+
+  '@types/node@16.18.108': {}
+
   '@types/node@22.5.5':
     dependencies:
       undici-types: 6.19.8
 
+  '@types/optimize-css-assets-webpack-plugin@5.0.8':
+    dependencies:
+      '@types/webpack': 4.41.39
+
+  '@types/pug@2.0.10': {}
+
+  '@types/qs@6.9.16': {}
+
+  '@types/range-parser@1.2.7': {}
+
   '@types/resolve@1.20.2': {}
 
+  '@types/send@0.17.4':
+    dependencies:
+      '@types/mime': 1.3.5
+      '@types/node': 22.5.5
+
+  '@types/serve-static@1.15.7':
+    dependencies:
+      '@types/http-errors': 2.0.4
+      '@types/node': 22.5.5
+      '@types/send': 0.17.4
+
+  '@types/source-list-map@0.1.6': {}
+
+  '@types/tapable@1.0.12': {}
+
+  '@types/terser-webpack-plugin@4.2.1':
+    dependencies:
+      '@types/webpack': 4.41.39
+      terser: 4.8.1
+
+  '@types/uglify-js@3.17.5':
+    dependencies:
+      source-map: 0.6.1
+
   '@types/web-bluetooth@0.0.20': {}
+
+  '@types/webpack-bundle-analyzer@3.9.5':
+    dependencies:
+      '@types/webpack': 4.41.39
+
+  '@types/webpack-hot-middleware@2.25.5':
+    dependencies:
+      '@types/connect': 3.4.38
+      '@types/webpack': 4.41.39
+
+  '@types/webpack-sources@3.2.3':
+    dependencies:
+      '@types/node': 22.5.5
+      '@types/source-list-map': 0.1.6
+      source-map: 0.7.4
+
+  '@types/webpack@4.41.39':
+    dependencies:
+      '@types/node': 22.5.5
+      '@types/tapable': 1.0.12
+      '@types/uglify-js': 3.17.5
+      '@types/webpack-sources': 3.2.3
+      anymatch: 3.1.3
+      source-map: 0.6.1
 
   '@unhead/dom@1.11.2':
     dependencies:
@@ -6006,8 +6192,6 @@ snapshots:
   deep-eql@5.0.2: {}
 
   deep-equal@1.0.1: {}
-
-  deep-pick-omit@1.2.0: {}
 
   deepmerge@4.3.1: {}
 
@@ -7310,27 +7494,6 @@ snapshots:
 
   pify@2.3.0: {}
 
-  pinia-plugin-persistedstate@4.0.1(@pinia/nuxt@0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5))(magicast@0.3.5)(pinia@2.2.2(vue@3.5.5))(rollup@4.21.3):
-    dependencies:
-      '@nuxt/kit': 3.13.1(magicast@0.3.5)(rollup@4.21.3)
-      deep-pick-omit: 1.2.0
-      defu: 6.1.4
-      destr: 2.0.3
-    optionalDependencies:
-      '@pinia/nuxt': 0.5.4(magicast@0.3.5)(rollup@4.21.3)(vue@3.5.5)
-      pinia: 2.2.2(vue@3.5.5)
-    transitivePeerDependencies:
-      - magicast
-      - rollup
-      - supports-color
-      - webpack-sources
-
-  pinia@2.2.2(vue@3.5.5):
-    dependencies:
-      '@vue/devtools-api': 6.6.4
-      vue: 3.5.5
-      vue-demi: 0.14.10(vue@3.5.5)
-
   pirates@4.0.6: {}
 
   pkg-types@1.2.0:
@@ -7958,6 +8121,13 @@ snapshots:
       mkdirp: 1.0.4
       yallist: 4.0.0
 
+  terser@4.8.1:
+    dependencies:
+      acorn: 8.12.1
+      commander: 2.20.3
+      source-map: 0.6.1
+      source-map-support: 0.5.21
+
   terser@5.32.0:
     dependencies:
       '@jridgewell/source-map': 0.3.6
@@ -8379,6 +8549,11 @@ snapshots:
       '@vue/runtime-dom': 3.5.5
       '@vue/server-renderer': 3.5.5(vue@3.5.5)
       '@vue/shared': 3.5.5
+
+  vuex@4.0.2(vue@3.5.5):
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.5
 
   webidl-conversions@3.0.1: {}
 
