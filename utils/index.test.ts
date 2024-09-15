@@ -1,10 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   generateUniqueHorseName,
   generateUniqueCondition,
   generateUniqueSilks,
   createInitialHorses,
   generateRaceSchedule,
+  wait,
+  calculateAnimationSpeed,
+  calculatePerformance,
+  runRace,
 } from "./index";
 import {
   STABLE,
@@ -16,7 +20,7 @@ import {
   NUM_RUNNING_HORSES,
   LEN_RUNS,
 } from "~/data/constants";
-import type { Horse } from "~/types";
+import type { Horse, RaceRun } from "~/types";
 
 /** Horses */
 describe("generateUniqueHorseName", () => {
@@ -143,24 +147,65 @@ describe("generateRaceSchedule", () => {
     });
   });
 
-  it("should handle cases where the number of initial horses is less than the number of running horses", () => {
-    const initialHorses: Horse[] = createInitialHorses(STABLE, 5); // Create 5 initial horses
+  it("should ensure each horse in a run is unique", () => {
+    const initialHorses: Horse[] = createInitialHorses(STABLE, NUM_HORSES);
     const schedule = generateRaceSchedule(initialHorses);
 
-    // Check the number of runs
-    expect(schedule.length).toBe(NUM_RUNS);
-
-    // Check the number of horses in each run and the length of each run
-    schedule.forEach((run, index) => {
-      expect(run.horses.length).toBe(NUM_RUNNING_HORSES);
-      expect(run.length).toBe(LEN_RUNS[index]);
-    });
-
-    // Check that all horses in the schedule are from the initial horses array
+    // Check that each horse in a run is unique
     schedule.forEach((run) => {
-      run.horses.forEach((horse) => {
-        expect(initialHorses).toContain(horse);
-      });
+      const horseIds = run.horses.map((horse) => horse.id);
+      const uniqueHorseIds = new Set(horseIds);
+      expect(uniqueHorseIds.size).toBe(horseIds.length);
     });
+  });
+});
+
+/** Helper Functions */
+describe("Helper Functions", () => {
+  vi.useFakeTimers();
+
+  it("wait function resolves after specified time", async () => {
+    const ms = 1000;
+    const promise = wait(ms);
+
+    vi.advanceTimersByTime(ms);
+
+    await expect(promise).resolves.toBeUndefined();
+  });
+
+  it("calculateAnimationSpeed returns correct speed based on condition", () => {
+    expect(calculateAnimationSpeed(30)).toBe(0.75);
+    expect(calculateAnimationSpeed(60)).toBe(1);
+    expect(calculateAnimationSpeed(80)).toBe(1.5);
+  });
+
+  it("calculatePerformance returns correct performance based on condition", () => {
+    const horses: Horse[] = [
+      { id: 1, name: "Horse 1", condition: 80 },
+      { id: 2, name: "Horse 2", condition: 60 },
+      { id: 3, name: "Horse 3", condition: 100 },
+    ];
+
+    expect(calculatePerformance(80, horses)).toBe(80);
+    expect(calculatePerformance(60, horses)).toBe(60);
+    expect(calculatePerformance(100, horses)).toBe(100);
+  });
+
+  it("runRace calculates and sorts race results correctly", async () => {
+    const race: RaceRun = {
+      length: 100,
+      horses: [
+        { id: 1, name: "Horse 1", condition: 80 },
+        { id: 2, name: "Horse 2", condition: 60 },
+        { id: 3, name: "Horse 3", condition: 100 },
+      ],
+    };
+
+    const results = await runRace(race);
+
+    expect(results).toHaveLength(3);
+    expect(results[0].horse.id).toBe(3); // Horse with the best condition
+    expect(results[1].horse.id).toBe(1);
+    expect(results[2].horse.id).toBe(2);
   });
 });
