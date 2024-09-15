@@ -167,14 +167,14 @@ const actions = {
         await wait(100);
       }
 
-      const audio = new Audio(raceSound);
-      console.log("audio", audio);
-      audio.play();
+      if (!state.raceFinished) {
+        const audio = new Audio(raceSound);
+        audio.play();
+      }
 
       // Calculate the results by using horses' condition and race length
       const raceResults = race.horses.map((horse) => {
         const performance = calculatePerformance(horse.condition, state.horses);
-        // const performance = (horse.condition / bestCondition) * 100; // Normalize performance to 100
         const animationSpeed = calculateAnimationSpeed(horse.condition);
         return { horse, performance, animationSpeed };
       });
@@ -182,20 +182,27 @@ const actions = {
       // Sort the results by performance in descending order
       raceResults.sort((a, b) => b.performance - a.performance);
 
-      // Wait for the race length before starting the next race so we can show animations in the ui
-      if (state.currentRun !== NUM_RUNS - 1) {
-        await wait(race.length);
-      }
-
       // Commit the results to the state
       commit("setResults", raceResults);
+
+      // Wait for the race length before starting the next race so we can show animations in the UI
+      let elapsed = 0;
+      const interval = 100;
+      while (elapsed < race.length * 2) {
+        if (state.isPaused) {
+          await wait(100);
+          continue;
+        }
+        await wait(interval);
+        elapsed += interval;
+      }
 
       // Increment the current run
       if (state.currentRun < state.raceSchedule.length - 1) {
         commit("setCurrentRun", state.currentRun + 1);
       }
 
-      // if we have reached the end of the runs, set raceFinished to true
+      // If we have reached the end of the runs, set raceFinished to true
       if (state.currentRun === state.raceSchedule.length - 1) {
         commit("setRaceFinished", true);
       }
