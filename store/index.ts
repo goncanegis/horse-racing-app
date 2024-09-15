@@ -1,12 +1,10 @@
 // create vuex store
 import { createStore } from "vuex";
 import type { Horse, RaceRun } from "~/types";
-import { STABLE, NUM_HORSES, NUM_RUNS } from "~/data/constants";
+import { STABLE, NUM_HORSES } from "~/data/constants";
 import {
   createInitialHorses,
   generateRaceSchedule,
-  wait,
-  runRace,
   calculateAnimationSpeed,
   calculatePerformance,
 } from "~/utils/index";
@@ -221,14 +219,6 @@ export const actions = {
         if (state.currentRun < state.raceSchedule.length - 1) {
           commit("setCurrentRun", state.currentRun + 1);
         }
-
-        // // If we have reached the end of the runs, set raceFinished to true
-        // if (state.currentRun === state.raceSchedule.length - 1) {
-        //   commit("setRaceFinished", true);
-        //   commit("pauseAudioTrack");
-        //   commit("resetAudioTrack");
-        //   commit("endRace");
-        // }
       }
 
       commit("setRaceFinished", true);
