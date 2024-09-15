@@ -147,3 +147,11 @@ ul {
 .custom-toast-container .Vue-Toastification__toast--error {
   @apply bg-red-400 text-gray-50 dark:bg-red-600 dark:text-gray-50;
 }
+
+.program-container {
+  height: auto;
+  max-height: 700px;
+  overflow-y: scroll;
+  display: grid;
+  min-width: 328px;
+}

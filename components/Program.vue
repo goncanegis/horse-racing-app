@@ -56,12 +56,4 @@ defineProps<Props>();
   </section>
 </template>
 
-<style scoped>
-.program-container {
-  height: auto;
-  max-height: calc(100vh - 180px);
-  overflow-y: scroll;
-  display: grid;
-  min-width: 328px;
-}
-</style>
+<style scoped></style>
