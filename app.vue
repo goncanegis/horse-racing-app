@@ -66,7 +66,7 @@ const createAnimationInstances = () => {
     container.style.setProperty("--color2", horse.jockeySilk[1]);
     container.style.transform = `scaleX(-1);`;
 
-    container.innerHTML = `<span title="${horse.name}" class="absolute bottom-full start-[-2rem] text-sm w-[80px] truncate" style="transform: scaleX(-1);">${horse.name}</span>`;
+    container.innerHTML = `<span title="${horse.name}" class="absolute bottom-full start-[-2rem] text-sm w-[80px] truncate bg-white/75 dark:bg-gray-800/75" style="transform: scaleX(-1);">${horse.name}</span>`;
 
     // Create a container for the horse name
     //  horseNameContainer.innerHTML = `<span class="text-sm z-[-1]">${horse.name}</span>`;
@@ -312,6 +312,36 @@ useHead({
           </div>
           <div ref="animationContainers" class="animation-container"></div>
         </div>
+
+        <div
+          class="w-full flex items-center font-bold w-full text-orange-600 dark:text-orange-500 bottom-0 translate-y-1/2"
+        >
+          <div
+            class="px-4 py-2 0 text-center flex-1 flex justify-center items-center ps-[28px]"
+          >
+            <transition
+              appear
+              enter-active-class="duration-300 ease-out"
+              enter-from-class="transform opacity-0"
+              enter-to-class="opacity-100"
+              leave-active-class="duration-200 ease-in"
+              leave-from-class="opacity-100"
+              leave-to-class="transform opacity-0"
+            >
+              <p v-if="raceSchedule[currentRun] && !raceFinished">
+                <span>{{ `${calculateOrdinalText(currentRun + 1)} Lap` }}</span>
+                -
+                <span>{{ raceSchedule[currentRun].length + "m" }}</span>
+              </p></transition
+            >
+          </div>
+
+          <div class="py-2 0 text-end translate-x-1/2">
+            <p>
+              <span>{{ "FINISH" }}</span>
+            </p>
+          </div>
+        </div>
       </RacetrackWrapper>
 
       <!-- Program -->
@@ -356,8 +386,9 @@ useHead({
   align-items: center;
   position: relative;
   width: 100%;
-  height: 77px;
+  height: 70px;
   border: 1px solid #ccc;
+  border-right: 2px solid rgb(249 115 22);
   gap: 4px;
 }
 
