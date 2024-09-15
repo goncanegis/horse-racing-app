@@ -21,12 +21,13 @@ interface State {
   isRunning: boolean;
   currentRun: number;
   raceFinished: boolean;
+  audioTrack: HTMLAudioElement;
 }
 
 /**
  * State
  */
-const state: State = {
+export const state: State = {
   horses: [] as Horse[],
   raceSchedule: [] as RaceRun[],
   counter: 0,
@@ -35,12 +36,13 @@ const state: State = {
   isRunning: false,
   currentRun: 0,
   raceFinished: false,
+  audioTrack: new Audio(raceSound),
 };
 
 /**
  * Getters
  */
-const getters = {
+export const getters = {
   horses: (state: State) => state.horses,
   raceSchedule: (state: State) => state.raceSchedule,
   counter(state: State): number {
@@ -61,12 +63,15 @@ const getters = {
   raceFinished(state: State): boolean {
     return state.raceFinished;
   },
+  audioTrack(state: State): HTMLAudioElement {
+    return state.audioTrack;
+  },
 };
 
 /**
  * Mutations
  */
-const mutations = {
+export const mutations = {
   increment(state: State) {
     state.counter++;
   },
@@ -80,6 +85,7 @@ const mutations = {
   },
 
   setResults(state: State, results: any[]) {
+    console.log("setting results");
     state.results = [...state.results, results];
   },
 
@@ -113,12 +119,28 @@ const mutations = {
   incrementCurrentRun(state: State) {
     state.currentRun++;
   },
+
+  setAudioTrack(state: State, audioTrack: HTMLAudioElement) {
+    state.audioTrack = audioTrack;
+  },
+
+  playAudioTrack(state: State) {
+    state.audioTrack.play();
+  },
+
+  pauseAudioTrack(state: State) {
+    state.audioTrack.pause();
+  },
+
+  resetAudioTrack(state: State) {
+    state.audioTrack.currentTime = 0;
+  },
 };
 
 /**
  * Actions
  */
-const actions = {
+export const actions = {
   increment({ commit }: { commit: Function }) {
     commit("increment");
   },
@@ -151,65 +173,79 @@ const actions = {
       return;
     }
 
-    // Reset results and start running the program
-    commit("resetResults");
-    commit("startRace");
-    commit("setCurrentRun", 0);
+    try {
+      // Reset results and start running the program
+      commit("resetResults");
+      commit("startRace");
+      commit("setCurrentRun", 0);
 
-    // Helper function to wait for a specified amount of time
-    const wait = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
+      // Helper function to wait for a specified amount of time
+      const wait = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
-    // Iterate over the race schedule
-    for (const race of state.raceSchedule) {
-      // Check if the race is paused. If it is, check every 100ms
-      while (state.isPaused) {
-        await wait(100);
-      }
-
-      if (!state.raceFinished) {
-        const audio = new Audio(raceSound);
-        audio.play();
-      }
-
-      // Calculate the results by using horses' condition and race length
-      const raceResults = race.horses.map((horse) => {
-        const performance = calculatePerformance(horse.condition, state.horses);
-        const animationSpeed = calculateAnimationSpeed(horse.condition);
-        return { horse, performance, animationSpeed };
-      });
-
-      // Sort the results by performance in descending order
-      raceResults.sort((a, b) => b.performance - a.performance);
-
-      // Commit the results to the state
-      commit("setResults", raceResults);
-
-      // Wait for the race length before starting the next race so we can show animations in the UI
-      let elapsed = 0;
-      const interval = 100;
-      while (elapsed < race.length * 2) {
-        if (state.isPaused) {
+      // Iterate over the race schedule
+      for (const race of state.raceSchedule) {
+        // Check if the race is paused. If it is, check every 100ms
+        while (state.isPaused) {
           await wait(100);
-          continue;
         }
-        await wait(interval);
-        elapsed += interval;
+
+        // Calculate the results by using horses' condition and race length
+        const raceResults = race.horses.map((horse) => {
+          const performance = calculatePerformance(
+            horse.condition,
+            state.horses
+          );
+          const animationSpeed = calculateAnimationSpeed(horse.condition);
+          return { horse, performance, animationSpeed };
+        });
+
+        // Sort the results by performance in descending order
+        raceResults.sort((a, b) => b.performance - a.performance);
+
+        // Wait for the race length before starting the next race so we can show animations in the UI
+        let elapsed = 0;
+        const interval = 100;
+        while (elapsed < race.length * 2) {
+          if (state.isPaused) {
+            await wait(100);
+            continue;
+          }
+          await wait(interval);
+          elapsed += interval;
+        }
+
+        // Commit the results to the state after the waiting period
+        commit("setResults", raceResults);
+
+        // Increment the current run
+        if (state.currentRun < state.raceSchedule.length - 1) {
+          commit("setCurrentRun", state.currentRun + 1);
+        }
+
+        // // If we have reached the end of the runs, set raceFinished to true
+        // if (state.currentRun === state.raceSchedule.length - 1) {
+        //   commit("setRaceFinished", true);
+        //   commit("pauseAudioTrack");
+        //   commit("resetAudioTrack");
+        //   commit("endRace");
+        // }
       }
 
-      // Increment the current run
-      if (state.currentRun < state.raceSchedule.length - 1) {
-        commit("setCurrentRun", state.currentRun + 1);
-      }
-
-      // If we have reached the end of the runs, set raceFinished to true
-      if (state.currentRun === state.raceSchedule.length - 1) {
-        commit("setRaceFinished", true);
-      }
+      commit("setRaceFinished", true);
+      commit("pauseAudioTrack");
+      commit("resetAudioTrack");
+      commit("endRace");
+    } catch (error) {
+      console.error(error);
     }
+  },
 
-    // End the race
-    commit("endRace");
+  resetRacetrack({ commit }: { commit: Function }) {
+    commit("setRaceFinished", false);
+    commit("setCurrentRun", 0);
+    commit("resetResults");
+    commit("resetAudioTrack");
   },
 
   toggleRace({
