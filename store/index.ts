@@ -85,7 +85,6 @@ export const mutations = {
   },
 
   setResults(state: State, results: any[]) {
-    console.log("setting results");
     state.results = [...state.results, results];
   },
 
