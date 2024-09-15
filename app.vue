@@ -35,6 +35,9 @@ const animationContainers = ref([]);
 const horseInfoContainers = ref([]);
 const animationInstances = ref([]);
 
+/**
+ * Create animation instances for each horse
+ */
 const createAnimationInstances = () => {
   // reset everything first
   // destroy all instances
@@ -116,13 +119,15 @@ const createAnimationInstances = () => {
   }
 };
 
+// Initialize the store and create the animation instances
 const handleClickRaceGeneration = () => {
   generateSchedule();
 
   startAnimations();
 };
 
-onMounted(() => {
+// before app mount, generate the horse list so we can show the horses
+onBeforeMount(() => {
   generateHorses();
 });
 
