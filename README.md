@@ -41,4 +41,32 @@ pnpm run preview
 
 ## Project Structure
 
-- data/constants.ts - Preconfigured constants for the race and horse names
+#### <u>Data</u>
+
+- <b>data/constants.ts</b> - Preconfigured constants values such as horse names, colors, number of horse list, etc.
+
+#### <u>Common functions</u>
+
+- <b>data/utils.ts</b> - Utility functions that will be used to generate race schedules and unique values for the races.
+
+- <b>data/utils.test.ts</b> - Unit tests for the utility functions.
+
+#### <u>State management</u>
+
+- <b>store/index.ts</b> - Centralized state management using Vuex
+
+- <b>plugins/store.ts</b> - Plugin to initialize the store and use it globally
+
+- <b>store/index.test.ts</b> - Unit tests for the store
+
+#### <u>SEO and meta</u>
+
+- <b>App SEO and meta tags</b> are configured in app.vue useHead composable.
+
+#### <u>Configurations</u>
+
+- <b>nuxt.config.ts</b> - CSR, color mode and other configurations are set here.
+
+- <b>app.config.ts</b> - NuxtUI configurations are set here.
+
+- <b>vitest.config.ts</b> - Vitest configurations are set here.
