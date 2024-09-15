@@ -202,6 +202,9 @@ export const runRace = async (race: RaceRun) => {
   return raceResults;
 };
 
+/**
+ * Helper function to calculate the animation speed based on the horse's condition
+ */
 export const calculateAnimationSpeed = (condition: number) => {
   if (condition <= 50) {
     return 0.75;
@@ -214,6 +217,9 @@ export const calculateAnimationSpeed = (condition: number) => {
   return 1.5;
 };
 
+/**
+ * Helper function to calculate the performance based on the horse's condition
+ */
 export const calculatePerformance = (condition: number, allHorses: Horse[]) => {
   const bestCondition = Math.max(...allHorses.map((horse) => horse.condition));
 
