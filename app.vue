@@ -10,6 +10,7 @@ const store = useStore();
 
 const colorMode = useColorMode();
 
+/** Store getters */
 const isPaused = computed(() => store.getters.isPaused);
 const isRunning = computed(() => store.getters.isRunning);
 const raceSchedule = computed(() => store.getters.raceSchedule);
@@ -18,16 +19,24 @@ const results = computed(() => store.getters.results);
 const currentRun = computed(() => store.getters.currentRun);
 const raceFinished = computed(() => store.getters.raceFinished);
 
+/** Store actions */
 const executeRace = () => store.dispatch("executeRace");
-const pauseRace = () => store.commit("pauseRace");
-const resumeRace = () => store.commit("resumeRace");
 const generateHorses = () => store.dispatch("generateHorses");
 const generateSchedule = () => store.dispatch("generateSchedule");
 const initStore = () => store.dispatch("init");
+const resetRacetrack = () => store.dispatch("resetRacetrack");
+
+/** Store mutations */
+const pauseRace = () => store.commit("pauseRace");
+const resumeRace = () => store.commit("resumeRace");
+const playAudioTrack = () => store.commit("playAudioTrack");
+const pauseAudioTrack = () => store.commit("pauseAudioTrack");
+const resetAudioTrack = () => store.commit("resetAudioTrack");
 
 const animationContainers = ref([]);
 const animationInstances = ref([]);
 
+/** Color mode  */
 const colorModeIcon = computed(() => {
   return colorMode.value === "system"
     ? "i-openmoji:overlapping-white-and-black-squares"
@@ -68,6 +77,7 @@ const createAnimationInstances = () => {
     container.classList.add("diagonal-split");
     container.style.setProperty("--color1", horse.jockeySilk[0]);
     container.style.setProperty("--color2", horse.jockeySilk[1]);
+    container.style.transform = `scaleX(-1);`;
 
     container.innerHTML = `<span title="${horse.name}" class="sr-only">${horse.name}</span>`;
 
@@ -92,7 +102,9 @@ const createAnimationInstances = () => {
     const containerWidth = container.parentElement.offsetWidth;
     const horseWidth = container.offsetWidth;
     const distance = containerWidth - horseWidth;
-    const targetPosition = ((performance / 100) * distance).toFixed(2);
+    const targetPosition = Math.abs(
+      (performance / 100) * distance - 40
+    ).toFixed(2);
 
     // Set initial position
     container.style.left = "0px";
@@ -102,7 +114,9 @@ const createAnimationInstances = () => {
     container.dataset.distance = distance;
 
     // Move the container to the target position if the race is running
-    if (isRunning.value) {
+    if (isRunning.value && !isPaused.value && !raceFinished.value) {
+      playAudioTrack();
+
       container.style.transition = `left ${
         raceSchedule.value[currentRun.value].length * 2
       }ms linear`;
@@ -124,6 +138,24 @@ const handleClickRaceGeneration = () => {
 onMounted(() => {
   generateHorses();
 });
+
+const calculateOrdinalText = (number) => {
+  const ordinal = ["st", "nd", "rd"];
+  switch (number) {
+    case 1:
+      return `${number}${ordinal[0]}`;
+      break;
+    case 2:
+      return `${number}${ordinal[1]}`;
+      break;
+    case 3:
+      return `${number}${ordinal[2]}`;
+      break;
+    default:
+      return `${number}th`;
+      break;
+  }
+};
 
 // Bring containers to their starting position
 const resetHorsePositions = () => {
@@ -169,6 +201,8 @@ const pauseAnimations = () => {
     container.style.transition = "none";
     container.style.left = `${currentLeft}px`;
   });
+
+  pauseAudioTrack();
 };
 
 // Resume all animations
@@ -194,6 +228,8 @@ const resumeAnimations = () => {
     container.style.transition = `left ${remainingTime}ms linear`;
     container.style.left = `${targetPosition}px`;
   });
+
+  //  playAudioTrack();
 };
 
 // If game has already started and is not paused, pause the game and animations
@@ -227,6 +263,11 @@ watch(
   (value) => {
     if (value) {
       startAnimations();
+      resetAudioTrack();
+
+      if (isRunning.value && !isPaused.value && !raceFinished.value) {
+        playAudioTrack();
+      }
     }
   },
   { immediate: true }
@@ -238,6 +279,14 @@ watch(raceFinished, (value) => {
     stopAnimations();
     resetHorsePositions();
   }
+});
+
+// Watcher the will scroll to the end of the results container when the results change
+watch(results, () => {
+  setTimeout(() => {
+    const resultsContainer = document.querySelector(".results-container");
+    resultsContainer.scrollTop = resultsContainer.scrollHeight;
+  }, 200);
 });
 
 // App meta data
@@ -262,8 +311,10 @@ useHead({
 </script>
 
 <template>
-  <UContainer class="pb-12 pt-20 relative">
-    <header class="fixed top-0 start-0 end-0 px-8 shadow-md z-20">
+  <div class="pb-12 pt-24 px-12 relative">
+    <header
+      class="fixed top-0 start-0 end-0 px-8 shadow-md z-20 bg-white dark:bg-gray-900"
+    >
       <div
         class="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 py-2"
       >
@@ -291,7 +342,7 @@ useHead({
           />
 
           <UButton
-            v-if="raceSchedule?.length > 0"
+            v-if="raceSchedule?.length > 0 && !raceFinished"
             :label="
               isRunning
                 ? isPaused
@@ -301,29 +352,137 @@ useHead({
             "
             @click="handleRaceControl"
           />
+
+          <UButton v-if="raceFinished" label="Reset" @click="resetRacetrack" />
         </div>
       </div>
     </header>
 
-    <div class="race-track">
-      <div v-for="(container, index) in 10" :key="index" class="race-row">
-        <div ref="animationContainers" class="animation-container"></div>
+    <main class="w-full flex flex-col md:flex-row gap-6">
+      <!-- List of 20 horses -->
+      <section class="">
+        <h2 class="text-2xl mb-4 font-bold">Horse List</h2>
+        <div class="grid-container">
+          <div class="grid-header">
+            <div class="grid-cell font-bold">Name</div>
+            <div class="grid-cell font-bold">Condition</div>
+            <div class="grid-cell font-bold">Color</div>
+          </div>
+          <div class="grid-body">
+            <div v-for="(horse, index) in horses" :key="index" class="grid-row">
+              <div class="grid-cell font-bold">{{ horse.name }}</div>
+              <div class="grid-cell">{{ horse.condition }}</div>
+              <div class="grid-cell">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-5 h-5 rounded-sm"
+                    :style="{ background: horse.color.value }"
+                  ></div>
+                  <span>{{ horse.color.label }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Racetrack -->
+      <div class="race-track flex-1">
+        <h2 class="text-2xl mb-4 font-bold">Racetrack</h2>
+        <div v-for="(container, index) in 10" :key="index" class="race-row">
+          <div class="track-number-container">
+            <span class="track-number">{{ index + 1 }}</span>
+          </div>
+          <div ref="animationContainers" class="animation-container"></div>
+        </div>
       </div>
-    </div>
 
-    <!-- <ul>
-      <li v-for="(item, index) in results" class="py-2">{{ item }}</li>
-    </ul> -->
+      <!-- Program -->
+      <section class="">
+        <h2 class="text-2xl mb-4 font-bold">Program</h2>
+        <div class="program-container">
+          <div
+            v-for="(run, runIndex) in raceSchedule"
+            :key="runIndex"
+            class="grid"
+          >
+            <!-- Run Info Row -->
+            <div
+              class="px-4 py-2 font-bold w-full bg-orange-600 text-white text-center"
+            >
+              <p>
+                <span>{{ `${calculateOrdinalText(runIndex + 1)} Lap` }}</span>
+                -
+                <span>{{ run.length + "m" }}</span>
+              </p>
+            </div>
 
-    <!-- <p>{{ raceSchedule }}</p> -->
-  </UContainer>
+            <!-- Horse List Row -->
+            <div
+              v-for="(horse, horseIndex) in run.horses"
+              :key="horseIndex"
+              class="grid grid-cols-[60px_1fr]"
+            >
+              <div class="border px-4 py-2 text-center">
+                {{ horseIndex + 1 }}
+              </div>
+              <div class="border px-4 py-2">
+                <ul>
+                  <li>{{ horse.name }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section class="">
+        <h2 class="text-2xl mb-4 font-bold">Results</h2>
+        <div class="program-container results-container">
+          <div
+            v-for="(result, resultIndex) in results"
+            :key="resultIndex"
+            class="grid"
+          >
+            <!-- Run Info Row -->
+            <div
+              class="px-4 py-2 font-bold w-full bg-orange-600 text-white text-center"
+            >
+              <p>
+                <span>{{
+                  `${calculateOrdinalText(resultIndex + 1)} Lap`
+                }}</span>
+                -
+                <span>{{ raceSchedule[resultIndex].length + "m" }}</span>
+              </p>
+            </div>
+
+            <!-- Horse List Row -->
+            <div
+              v-for="(item, index) in result"
+              class="grid grid-cols-[60px_1fr]"
+            >
+              <div class="border px-4 py-2 text-center">
+                {{ index + 1 }}
+              </div>
+              <div class="border px-4 py-2">
+                <ul>
+                  <li>{{ item.horse.name }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 </template>
 
 <style scoped>
 .race-track {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .race-row {
@@ -331,22 +490,20 @@ useHead({
   align-items: center;
   position: relative;
   width: 100%;
-  height: 50px;
+  height: 64px;
   border-bottom: 1px solid #ccc;
+  gap: 4px;
 }
 
-.animation-container {
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  left: 0;
-  transform: scaleX(-1); /* Flip horizontally */
+.race-row:first-child {
+  border-top: 1px solid #ccc;
 }
 
 .diagonal-split {
   position: relative;
   width: 50px;
   height: 50px;
+  transform: scaleX(-1);
 }
 
 .diagonal-split::before,
@@ -367,5 +524,49 @@ useHead({
 .diagonal-split::after {
   background: var(--color2);
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.track-number-container {
+  background: green;
+  height: 100%;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-number {
+  transform: rotate(-90deg);
+  font-weight: bold;
+}
+
+.program-container {
+  height: auto;
+  max-height: calc(100vh - 180px);
+  overflow-y: scroll;
+  display: grid;
+  min-width: 328px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+}
+
+.grid-header {
+  display: contents;
+}
+
+.grid-body {
+  display: contents;
+}
+
+.grid-row {
+  display: contents;
+}
+
+.grid-cell {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
 }
 </style>
