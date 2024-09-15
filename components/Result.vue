@@ -18,28 +18,45 @@ defineProps<Props>();
         :key="resultIndex"
         class="grid"
       >
-        <!-- Run Info Row -->
-        <div
-          class="px-4 py-2 font-bold w-full bg-orange-600 text-white text-center"
+        <transition
+          appear
+          enter-active-class="duration-300 ease-out"
+          enter-from-class="transform opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="duration-200 ease-in"
+          leave-from-class="opacity-100"
+          leave-to-class="transform opacity-0"
         >
-          <p>
-            <span>{{ `${calculateOrdinalText(resultIndex + 1)} Lap` }}</span>
-            -
-            <span>{{ raceSchedule[resultIndex].length + "m" }}</span>
-          </p>
-        </div>
+          <div v-if="result" class="grid">
+            <!-- Run Info Row -->
+            <div
+              class="px-4 py-2 font-bold w-full bg-orange-600 text-white text-center"
+            >
+              <p>
+                <span>{{
+                  `${calculateOrdinalText(resultIndex + 1)} Lap`
+                }}</span>
+                -
+                <span>{{ raceSchedule[resultIndex].length + "m" }}</span>
+              </p>
+            </div>
 
-        <!-- Horse List Row -->
-        <div v-for="(item, index) in result" class="grid grid-cols-[60px_1fr]">
-          <div class="border px-4 py-2 text-center">
-            {{ index + 1 }}
+            <!-- Horse List Row -->
+            <div
+              v-for="(item, index) in result"
+              class="grid grid-cols-[60px_1fr]"
+            >
+              <div class="border px-4 py-2 text-center">
+                {{ index + 1 }}
+              </div>
+              <div class="border px-4 py-2">
+                <ul>
+                  <li>{{ item.horse.name }}</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="border px-4 py-2">
-            <ul>
-              <li>{{ item.horse.name }}</li>
-            </ul>
-          </div>
-        </div>
+        </transition>
       </div>
     </div>
   </section>
