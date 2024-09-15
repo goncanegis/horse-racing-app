@@ -3,6 +3,8 @@ import { useStore } from "vuex";
 import lottie from "lottie-web";
 import racingJson from "~/assets/gif/racing.json";
 import { calculatePerformance } from "~/utils";
+import Logo from "~/assets/images/logo.svg?component";
+import { NUM_RUNS, NUM_RUNNING_HORSES } from "~/data/constants";
 
 const store = useStore();
 
@@ -26,28 +28,32 @@ const animationInstances = ref([]);
 
 const createAnimationInstances = () => {
   // reset everything first
+  // destroy all instances
   if (animationInstances.value.length > 0) {
     animationInstances.value.forEach((instance) => {
       instance.destroy();
     });
   }
 
+  // clear the array
   animationInstances.value = [];
 
-  // destroy all instances
+  // clear the containers
   animationContainers.value.forEach((container) => {
     container.innerHTML = "";
   });
 
-  for (let i = 0; i < 10; i++) {
+  // create 10 animation instances and colored containers
+  for (let i = 0; i < NUM_RUNNING_HORSES; i++) {
     const container = animationContainers.value[i];
-
     const horse = raceSchedule.value[currentRun.value].horses[i];
+
     container.classList.add("diagonal-split");
     container.style.setProperty("--color1", horse.jockeySilk[0]);
     container.style.setProperty("--color2", horse.jockeySilk[1]);
 
     container.innerHTML = `<span title="${horse.name}" class="sr-only">${horse.name}</span>`;
+
     const animationInstance = lottie.loadAnimation({
       container,
       renderer: "svg",
@@ -60,6 +66,8 @@ const createAnimationInstances = () => {
     animationInstances.value.push(animationInstance);
 
     // Calculate performance using the existing function
+    // this will be used to determine the speed of the animation
+    // and how much distance the horse will cover in the run's duration
     const performance = calculatePerformance(
       horse.condition,
       raceSchedule.value[currentRun.value].horses
@@ -67,60 +75,26 @@ const createAnimationInstances = () => {
     const containerWidth = container.parentElement.offsetWidth;
     const horseWidth = container.offsetWidth;
     const distance = containerWidth - horseWidth;
-    const targetPosition = (performance / 100) * distance;
+    const targetPosition = ((performance / 100) * distance).toFixed(2);
 
+    // Set initial position
+    container.style.left = "0px";
+
+    // Store target position as a data attribute
+    container.dataset.targetPosition = targetPosition;
+    container.dataset.distance = distance;
+
+    // Move the container to the target position if the race is running
     if (isRunning.value) {
-      container.style.transition = `transform ${
-        raceSchedule.value[currentRun.value].length
+      container.style.transition = `left ${
+        raceSchedule.value[currentRun.value].length * 2
       }ms linear`;
-      container.style.transform = `translateX(${targetPosition}px) scaleX(-1)`;
+      container.style.left = `${targetPosition}px`;
 
       // Set animation speed and play
       animationInstance.setSpeed(performance / 100); // Example: speed based on performance
       animationInstance.play();
     }
-  }
-};
-
-const updateAnimationInstances = () => {
-  const currentResults = results.value[currentRun.value];
-  const currentRunSchedule = raceSchedule.value[currentRun.value];
-
-  for (let i = 0; i < 10; i++) {
-    const container = animationContainers.value[i];
-    container.style.background =
-      raceSchedule.value[currentRun.value].horses[i].jockeySilk[0];
-    container.innerHTML = raceSchedule.value[currentRun.value].horses[i].name;
-  }
-
-  // Move horses based on their performance
-  if (currentResults) {
-    currentResults.forEach((result, index) => {
-      const horseElement = animationContainers.value[index];
-
-      if (horseElement) {
-        const containerWidth = horseElement.parentElement.offsetWidth;
-        const horseWidth = horseElement.offsetWidth;
-        const distance = containerWidth - horseWidth;
-        const targetPosition = (result.performance / 100) * distance;
-
-        horseElement.style.transition = `transform ${currentRunSchedule.length}ms linear`;
-        horseElement.style.transform = `translateX(${targetPosition}px) scaleX(-1)`;
-      }
-    });
-  }
-
-  if (currentResults) {
-    currentResults.forEach((result, index) => {
-      const animationInstance = animationInstances.value.find(
-        (instance) => instance.id === result.horse.id
-      );
-
-      if (animationInstance) {
-        animationInstance.setSpeed(result.animationSpeed);
-        animationInstance.play();
-      }
-    });
   }
 };
 
@@ -134,23 +108,26 @@ onMounted(() => {
   generateHorses();
 });
 
+// Bring containers to their starting position
 const resetHorsePositions = () => {
   animationContainers.value.forEach((container) => {
     if (container) {
       container.style.transition = "none";
-      container.style.transform = "translateX(0) scaleX(-1)";
+      container.style.left = "0px";
     }
   });
 };
 
+// Start animations
+// Reset horse positions
+// Create new animation instances for the current run
 const startAnimations = () => {
-  // Reset horse positions
   resetHorsePositions();
 
-  // Create new animation instances for the current run
   createAnimationInstances();
 };
 
+// Stop all animations
 const stopAnimations = () => {
   animationInstances.value.forEach((animationInstance) => {
     if (animationInstance.isLoaded) {
@@ -159,34 +136,75 @@ const stopAnimations = () => {
   });
 };
 
+// Pause all animations
+// Stop all transitions
+// Freeze the current position of the horses
 const pauseAnimations = () => {
-  // Allow current animations to finish
-  setTimeout(() => {
-    resetHorsePositions();
-  }, raceSchedule.value[currentRun.value].length);
+  animationInstances.value.forEach((animationInstance) => {
+    if (animationInstance.isLoaded) {
+      animationInstance.pause();
+    }
+  });
+
+  animationContainers.value.forEach((container) => {
+    const computedStyle = window.getComputedStyle(container);
+    const currentLeft = parseFloat(computedStyle.left);
+    container.style.transition = "none";
+    container.style.left = `${currentLeft}px`;
+  });
 };
 
+// Resume all animations
+// Set the transition duration based on the remaining distance
+// Move the horses to their target position from their current position
 const resumeAnimations = () => {
   animationInstances.value.forEach((animationInstance) => {
     if (animationInstance.isLoaded) {
       animationInstance.play();
     }
   });
+
+  animationContainers.value.forEach((container) => {
+    const distance = parseFloat(container.dataset.distance);
+    const targetPosition = parseFloat(container.dataset.targetPosition);
+    const computedStyle = window.getComputedStyle(container);
+    const currentLeft = parseFloat(computedStyle.left);
+    const remainingDistance = targetPosition - currentLeft;
+    const remainingTime =
+      (remainingDistance / distance) *
+      raceSchedule.value[currentRun.value].length *
+      2;
+    container.style.transition = `left ${remainingTime}ms linear`;
+    container.style.left = `${targetPosition}px`;
+  });
 };
 
+// If game has already started and is not paused, pause the game and animations
+// If game has already started and is paused, resume the game and animations
+// If game has not started, start the game and animations
 const handleRaceControl = () => {
   if (isRunning.value && !isPaused.value) {
+    // pause store
     pauseRace();
+
+    // pause ui
     pauseAnimations();
   } else if (isRunning.value && isPaused.value) {
+    // resume store
     resumeRace();
+
+    // resume ui
     resumeAnimations();
   } else {
+    // start store action
     executeRace();
+
+    // start ui
     startAnimations();
   }
 };
 
+// When the current run changes, start the animations to recreate the instance and containers
 watch(
   currentRun,
   (value) => {
@@ -197,19 +215,44 @@ watch(
   { immediate: true }
 );
 
+// When all the runs are finished, stop all animations and reset the horse positions
 watch(raceFinished, (value) => {
   if (value) {
     stopAnimations();
     resetHorsePositions();
   }
 });
+
+// App meta data
+useHead({
+  charset: "utf-8",
+  viewport: "width=device-width, initial-scale=1",
+  title: "Horse Racing App",
+  meta: [
+    {
+      hid: "description",
+      name: "description",
+      content: "Horse Racing App",
+    },
+    {
+      hid: "description",
+      name: "description",
+      content: "At koşar baht kazanır",
+    },
+  ],
+  link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+});
 </script>
 
 <template>
   <UContainer class="pb-12 pt-20 relative">
-    <header class="fixed top-0 start-0 end-0 px-8 bg-white shadow-md z-20">
+    <header class="fixed top-0 start-0 end-0 px-8 shadow-md z-20">
       <div class="flex flex-col md:flex-row items-center justify-between py-2">
-        <h1 class="text-2xl font-bold">Horse Racing</h1>
+        <div class="flex items-center gap-2">
+          <Logo filled class="w-[48px] h-[48px]" />
+          <h1 class="text-2xl font-bold">Horse Racing</h1>
+        </div>
+
         <div class="flex items-center gap-4">
           <UButton
             label="Generate Schedule"
