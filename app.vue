@@ -2,7 +2,7 @@
 import { useStore } from "vuex";
 import lottie from "lottie-web";
 import racingJson from "~/assets/gif/racing.json";
-import { calculatePerformance } from "~/utils";
+import { calculatePerformance, calculateOrdinalText } from "~/utils";
 
 import { NUM_RUNS, NUM_RUNNING_HORSES } from "~/data/constants";
 
@@ -32,6 +32,7 @@ const pauseAudioTrack = () => store.commit("pauseAudioTrack");
 const resetAudioTrack = () => store.commit("resetAudioTrack");
 
 const animationContainers = ref([]);
+const horseInfoContainers = ref([]);
 const animationInstances = ref([]);
 
 const createAnimationInstances = () => {
@@ -54,6 +55,7 @@ const createAnimationInstances = () => {
   // create 10 animation instances and colored containers
   for (let i = 0; i < NUM_RUNNING_HORSES; i++) {
     const container = animationContainers.value[i];
+    const horseNameContainer = horseInfoContainers.value[i];
     const horse = raceSchedule.value[currentRun.value].horses[i];
 
     container.classList.add("diagonal-split");
@@ -61,7 +63,10 @@ const createAnimationInstances = () => {
     container.style.setProperty("--color2", horse.jockeySilk[1]);
     container.style.transform = `scaleX(-1);`;
 
-    container.innerHTML = `<span title="${horse.name}" class="sr-only">${horse.name}</span>`;
+    container.innerHTML = `<span title="${horse.name}" class="absolute bottom-full start-[-2rem] text-sm w-[80px] truncate" style="transform: scaleX(-1);">${horse.name}</span>`;
+
+    // Create a container for the horse name
+    //  horseNameContainer.innerHTML = `<span class="text-sm z-[-1]">${horse.name}</span>`;
 
     const animationInstance = lottie.loadAnimation({
       container,
@@ -120,24 +125,6 @@ const handleClickRaceGeneration = () => {
 onMounted(() => {
   generateHorses();
 });
-
-const calculateOrdinalText = (number) => {
-  const ordinal = ["st", "nd", "rd"];
-  switch (number) {
-    case 1:
-      return `${number}${ordinal[0]}`;
-      break;
-    case 2:
-      return `${number}${ordinal[1]}`;
-      break;
-    case 3:
-      return `${number}${ordinal[2]}`;
-      break;
-    default:
-      return `${number}th`;
-      break;
-  }
-};
 
 // Bring containers to their starting position
 const resetHorsePositions = () => {
@@ -263,7 +250,7 @@ watch(raceFinished, (value) => {
   }
 });
 
-// Watcher the will scroll to the end of the results container when the results change
+// Watcher that will scroll to the end of the results container when the results change
 watch(results, () => {
   setTimeout(() => {
     const resultsContainer = document.querySelector(".results-container");
@@ -293,7 +280,7 @@ useHead({
 </script>
 
 <template>
-  <div class="pb-12 pt-24 px-12 relative">
+  <div class="pb-12 pt-24 px-6 2xl:px-12 relative">
     <Header
       :is-running="isRunning"
       :is-paused="isPaused"
@@ -306,145 +293,32 @@ useHead({
 
     <PageWrapper>
       <!-- List of 20 horses -->
-      <section class="">
-        <h2 class="text-2xl mb-4 font-bold">Horse List</h2>
-        <div class="grid-container">
-          <div class="grid-header">
-            <div class="grid-cell font-bold">Name</div>
-            <div class="grid-cell font-bold">Condition</div>
-            <div class="grid-cell font-bold">Color</div>
-          </div>
-          <div class="grid-body">
-            <div v-for="(horse, index) in horses" :key="index" class="grid-row">
-              <div class="grid-cell font-bold">{{ horse.name }}</div>
-              <div class="grid-cell">{{ horse.condition }}</div>
-              <div class="grid-cell">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-5 h-5 rounded-sm"
-                    :style="{ background: horse.color.value }"
-                  ></div>
-                  <span>{{ horse.color.label }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HorseList :horses="horses" />
 
       <!-- Racetrack -->
-      <div class="race-track flex-1">
-        <h2 class="text-2xl mb-4 font-bold">Racetrack</h2>
-        <div v-for="(container, index) in 10" :key="index" class="race-row">
+      <RacetrackWrapper>
+        <div
+          v-for="(container, index) in NUM_RUNNING_HORSES"
+          :key="index"
+          class="race-row"
+        >
           <div class="track-number-container">
             <span class="track-number">{{ index + 1 }}</span>
           </div>
           <div ref="animationContainers" class="animation-container"></div>
         </div>
-      </div>
+      </RacetrackWrapper>
 
       <!-- Program -->
-      <section class="">
-        <h2 class="text-2xl mb-4 font-bold">Program</h2>
-        <div class="program-container">
-          <div
-            v-for="(run, runIndex) in raceSchedule"
-            :key="runIndex"
-            class="grid"
-          >
-            <!-- Run Info Row -->
-            <div
-              class="px-4 py-2 font-bold w-full bg-orange-600 text-white text-center"
-            >
-              <p>
-                <span>{{ `${calculateOrdinalText(runIndex + 1)} Lap` }}</span>
-                -
-                <span>{{ run.length + "m" }}</span>
-              </p>
-            </div>
-
-            <!-- Horse List Row -->
-            <div
-              v-for="(horse, horseIndex) in run.horses"
-              :key="horseIndex"
-              class="grid grid-cols-[60px_1fr]"
-            >
-              <div class="border px-4 py-2 text-center">
-                {{ horseIndex + 1 }}
-              </div>
-              <div class="border px-4 py-2">
-                <ul>
-                  <li>{{ horse.name }}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Program :raceSchedule="raceSchedule" />
 
       <!-- Results -->
-      <section class="">
-        <h2 class="text-2xl mb-4 font-bold">Results</h2>
-        <div class="program-container results-container">
-          <div
-            v-for="(result, resultIndex) in results"
-            :key="resultIndex"
-            class="grid"
-          >
-            <!-- Run Info Row -->
-            <div
-              class="px-4 py-2 font-bold w-full bg-orange-600 text-white text-center"
-            >
-              <p>
-                <span>{{
-                  `${calculateOrdinalText(resultIndex + 1)} Lap`
-                }}</span>
-                -
-                <span>{{ raceSchedule[resultIndex].length + "m" }}</span>
-              </p>
-            </div>
-
-            <!-- Horse List Row -->
-            <div
-              v-for="(item, index) in result"
-              class="grid grid-cols-[60px_1fr]"
-            >
-              <div class="border px-4 py-2 text-center">
-                {{ index + 1 }}
-              </div>
-              <div class="border px-4 py-2">
-                <ul>
-                  <li>{{ item.horse.name }}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Result :results="results" :raceSchedule="raceSchedule" />
     </PageWrapper>
   </div>
 </template>
 
 <style scoped>
-.race-track {
-  display: flex;
-  flex-direction: column;
-}
-
-.race-row {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  height: 64px;
-  border-bottom: 1px solid #ccc;
-  gap: 4px;
-}
-
-.race-row:first-child {
-  border-top: 1px solid #ccc;
-}
-
 .diagonal-split {
   position: relative;
   width: 50px;
@@ -472,8 +346,19 @@ useHead({
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }
 
+.race-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 77px;
+  border: 1px solid #ccc;
+  gap: 4px;
+}
+
 .track-number-container {
   background: green;
+  color: #fff;
   height: 100%;
   width: 36px;
   display: flex;
@@ -484,35 +369,5 @@ useHead({
 .track-number {
   transform: rotate(-90deg);
   font-weight: bold;
-}
-
-.program-container {
-  height: auto;
-  max-height: calc(100vh - 180px);
-  overflow-y: scroll;
-  display: grid;
-  min-width: 328px;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: 1fr 80px 1fr;
-}
-
-.grid-header {
-  display: contents;
-}
-
-.grid-body {
-  display: contents;
-}
-
-.grid-row {
-  display: contents;
-}
-
-.grid-cell {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
 }
 </style>
