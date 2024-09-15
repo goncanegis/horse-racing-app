@@ -9,8 +9,6 @@ import {
   LEN_RUNS,
 } from "~/data/constants";
 
-type ColorArray = string[] | string[][];
-
 /**
  * Helper functions to create initial horses
  */
@@ -226,4 +224,26 @@ export const calculatePerformance = (condition: number, allHorses: Horse[]) => {
   const performance = (condition / bestCondition) * 100;
 
   return performance;
+};
+
+/**
+ * Helper function that returns the ordinal number text for a given number
+ */
+
+export const calculateOrdinalText = (number: number) => {
+  const ordinal = ["st", "nd", "rd"];
+  switch (number) {
+    case 1:
+      return `${number}${ordinal[0]}`;
+      break;
+    case 2:
+      return `${number}${ordinal[1]}`;
+      break;
+    case 3:
+      return `${number}${ordinal[2]}`;
+      break;
+    default:
+      return `${number}th`;
+      break;
+  }
 };
