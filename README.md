@@ -1,7 +1,5 @@
 # Horse Racing Simulator
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
-
 ## Setup
 
 Make sure to install the dependencies:
@@ -70,3 +68,11 @@ pnpm run preview
 - <b>app.config.ts</b> - NuxtUI configurations are set here.
 
 - <b>vitest.config.ts</b> - Vitest configurations are set here.
+
+<br />
+<br />
+---
+<br />
+<br />
+
+Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
