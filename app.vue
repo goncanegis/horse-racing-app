@@ -3,12 +3,10 @@ import { useStore } from "vuex";
 import lottie from "lottie-web";
 import racingJson from "~/assets/gif/racing.json";
 import { calculatePerformance } from "~/utils";
-import Logo from "~/assets/images/logo.svg?component";
+
 import { NUM_RUNS, NUM_RUNNING_HORSES } from "~/data/constants";
 
 const store = useStore();
-
-const colorMode = useColorMode();
 
 /** Store getters */
 const isPaused = computed(() => store.getters.isPaused);
@@ -35,22 +33,6 @@ const resetAudioTrack = () => store.commit("resetAudioTrack");
 
 const animationContainers = ref([]);
 const animationInstances = ref([]);
-
-/** Color mode  */
-const colorModeIcon = computed(() => {
-  return colorMode.value === "system"
-    ? "i-openmoji:overlapping-white-and-black-squares"
-    : colorMode.value === "dark"
-    ? "i-heroicons-moon-20-solid"
-    : "i-heroicons-sun-20-solid";
-});
-
-const availableModes = ["system", "dark", "light"];
-const switchColorMode = () => {
-  const currentIndex = availableModes.indexOf(colorMode.value);
-  const nextIndex = (currentIndex + 1) % availableModes.length;
-  colorMode.value = availableModes[nextIndex];
-};
 
 const createAnimationInstances = () => {
   // reset everything first
@@ -312,51 +294,15 @@ useHead({
 
 <template>
   <div class="pb-12 pt-24 px-12 relative">
-    <header
-      class="fixed top-0 start-0 end-0 px-8 shadow-md z-20 bg-white dark:bg-gray-900"
-    >
-      <div
-        class="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 py-2"
-      >
-        <div class="flex items-center gap-2">
-          <Logo filled class="w-[48px] h-[48px]" />
-          <h1 class="text-2xl font-bold">Horse Racing</h1>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <ClientOnly>
-            <UButton
-              :icon="colorModeIcon"
-              color="gray"
-              variant="ghost"
-              aria-label="Theme"
-              @click="switchColorMode"
-            />
-            <template #fallback>
-              <div class="w-8 h-8" />
-            </template>
-          </ClientOnly>
-          <UButton
-            label="Generate Schedule"
-            @click="handleClickRaceGeneration"
-          />
-
-          <UButton
-            v-if="raceSchedule?.length > 0 && !raceFinished"
-            :label="
-              isRunning
-                ? isPaused
-                  ? 'Resume Race'
-                  : 'Pause Race'
-                : 'Start Race'
-            "
-            @click="handleRaceControl"
-          />
-
-          <UButton v-if="raceFinished" label="Reset" @click="resetRacetrack" />
-        </div>
-      </div>
-    </header>
+    <Header
+      :is-running="isRunning"
+      :is-paused="isPaused"
+      :raceSchedule="raceSchedule"
+      :race-finished="raceFinished"
+      @handleClickRaceGeneration="handleClickRaceGeneration"
+      @handleRaceControl="handleRaceControl"
+      @resetRacetrack="resetRacetrack"
+    />
 
     <main class="w-full flex flex-col md:flex-row gap-6">
       <!-- List of 20 horses -->
