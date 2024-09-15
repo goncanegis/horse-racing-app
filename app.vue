@@ -304,7 +304,7 @@ useHead({
       @resetRacetrack="resetRacetrack"
     />
 
-    <main class="w-full flex flex-col md:flex-row gap-6">
+    <PageWrapper>
       <!-- List of 20 horses -->
       <section class="">
         <h2 class="text-2xl mb-4 font-bold">Horse List</h2>
@@ -421,7 +421,7 @@ useHead({
           </div>
         </div>
       </section>
-    </main>
+    </PageWrapper>
   </div>
 </template>
 
