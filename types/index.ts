@@ -3,7 +3,10 @@ export interface Horse {
   id: number;
   jockeySilk: string[];
   condition: number;
-  color: string;
+  color: {
+    label: string;
+    value: string;
+  };
 }
 
 export interface RaceRun {

@@ -16,23 +16,6 @@ type ColorArray = string[] | string[][];
  */
 
 /**
- * Horse name generator that will select a unique name from the STABLE array
- * @param createdIndexes - array of indexes that have already been used
- * @returns - a unique horse name
- */
-export const generateUniqueHorseName = (
-  namesArray: string[],
-  createdIndexes: number[]
-): { name: string; index: number } => {
-  const index = Math.floor(Math.random() * namesArray.length);
-  if (createdIndexes.includes(index)) {
-    return generateUniqueHorseName(namesArray, createdIndexes);
-  }
-  createdIndexes.push(index);
-  return { name: namesArray[index], index };
-};
-
-/**
  *
  * @param createdConditions - array of conditions that have already been used
  * @returns a unique condition
@@ -64,9 +47,11 @@ export const generateUniqueSilks = (
   return colors;
 };
 
-export const generateUniqueHorseColor = (createdColors: string[]): string => {
+export const generateUniqueHorseColor = (
+  createdColors: { label: string; value: string }[]
+): { label: string; value: string } => {
   const color = HORSE_COLORS[Math.floor(Math.random() * HORSE_COLORS.length)];
-  if (createdColors.includes(color)) {
+  if (createdColors.some((c) => c.value === color.value)) {
     return generateUniqueHorseColor(createdColors);
   }
   createdColors.push(color);
@@ -90,6 +75,23 @@ const cleanData = <T>(data: T[]): T[] => {
 };
 
 /**
+ * Horse name generator that will select a unique name from the STABLE array
+ * @param createdIndexes - array of indexes that have already been used
+ * @returns - a unique horse name
+ */
+export const generateUniqueHorseName = (
+  namesArray: string[],
+  createdIndexes: number[]
+): { name: string; index: number } => {
+  const index = Math.floor(Math.random() * namesArray.length);
+  if (createdIndexes.includes(index)) {
+    return generateUniqueHorseName(namesArray, createdIndexes);
+  }
+  createdIndexes.push(index);
+  return { name: namesArray[index], index };
+};
+
+/**
  *
  * @param count - number of horses to create
  * @returns an array of horses
@@ -103,12 +105,10 @@ export const createInitialHorses = (
 
   const silks = cleanData(JOCKEY_SILKS);
 
-  const colors = cleanData(HORSE_COLORS);
-
   const usedNameIndexes: number[] = [];
   const usedConditions: number[] = [];
   const usedSilkColors: string[][] = [];
-  const usedHorseColors: string[] = [];
+  const usedHorseColors: { label: string; value: string }[] = [];
 
   const horses: Horse[] = [];
 
@@ -131,7 +131,7 @@ export const createInitialHorses = (
 
     usedNameIndexes.push(index);
     usedConditions.push(condition);
-    usedSilkColors.push(colors);
+    usedSilkColors.push(silkColors);
     usedHorseColors.push(color);
   }
 
