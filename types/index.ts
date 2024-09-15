@@ -13,3 +13,9 @@ export interface RaceRun {
   horses: Horse[];
   length: number;
 }
+
+export interface RaceResult {
+  animationSpeed: number;
+  horse: Horse;
+  performance: number;
+}
